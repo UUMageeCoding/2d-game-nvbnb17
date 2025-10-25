@@ -12,11 +12,6 @@ public class PotionCollect : MonoBehaviour
     {
         // Debug.Log("Potion Collected");
 
-
-        if (collision.CompareTag("Player"))
-        {
-            SoundFXManager.instance.PlaySoundFXClip(pickupSoundClip, transform, 1f);
-        }
         if (collision.CompareTag("Player"))
         {
             Destroy(gameObject);
