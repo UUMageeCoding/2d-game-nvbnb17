@@ -69,7 +69,7 @@ public class PlatformerController : MonoBehaviour
             _isDashing = true;
             _canDash = false;
             _trailRenderer.emitting = true;
-            _dashingDir = new Vector2(Input.GetAxisRaw("Horizontal"), 0);
+            _dashingDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             if (_dashingDir == Vector2.zero)
             {
                 _dashingDir = new Vector2(transform.localScale.x, y:0);
