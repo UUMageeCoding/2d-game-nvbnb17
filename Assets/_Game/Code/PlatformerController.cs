@@ -1,4 +1,5 @@
 using System.Collections;
+using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 
@@ -13,22 +14,17 @@ public class PlatformerController : MonoBehaviour
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
     
-    private Rigidbody2D rb;
-
+    public Rigidbody2D rb;
     private TrailRenderer _trailRenderer;
     private bool isGrounded;
     private float moveInput;
-    
-    [Header("Dashing")]
-    [SerializeField] private float _dashingVelocity = 15.5f;
 
-    [SerializeField] private float _dashingTime = 0.1f;
+    public float dashDuration = .3f;
+    private bool isDashing;
+    private bool facingRight;
 
-    private Vector2 _dashingDir;
+    public float dashForce = 15f;
 
-    private bool _isDashing;
-
-    private bool _canDash = true;
 
 
      
@@ -42,14 +38,28 @@ public class PlatformerController : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 3f;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        // dashing mechanic
+    isDashing = false; 
+    facingRight = true;
+        
     }
     
      private void Update()
     {
         // Get horizontal input
         moveInput = Input.GetAxisRaw("Horizontal");
+
+        if (moveInput > 0f)
+        {
+            facingRight = true;
+        }
+        else if (moveInput < 0f)
+        {
+            facingRight = false;
+        }
         
-        Debug.Log("_isDashing  in update " + _isDashing);
+    
         // Check if grounded
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         
@@ -59,35 +69,12 @@ public class PlatformerController : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
 
-        //dash input
-
-        var dashInput = Input.GetButtonDown("Dash");
-        Debug.Log("i Dashed" + dashInput);
-
-        if (dashInput && _canDash)
+        if (Input.GetButtonDown("Dash") && !isDashing)
         {
-            _isDashing = true;
-            _canDash = false;
-            _trailRenderer.emitting = true;
-            _dashingDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            if (_dashingDir == Vector2.zero)
-            {
-                _dashingDir = new Vector2(transform.localScale.x, y:0);
-            }
+            StartCoroutine(Dash());
         }
 
-        if (_isDashing)
-        {
-            rb.linearVelocity = _dashingDir.normalized * _dashingVelocity;
-            return;
-        }
 
-        if (isGrounded)
-        {
-            _canDash = true;
-        }
-
-        StartCoroutine(StopDashing());
     }
     
     private void FixedUpdate()
@@ -106,11 +93,28 @@ public class PlatformerController : MonoBehaviour
         }
     }
 
-    private IEnumerator StopDashing()
-    {
-        yield return new WaitForSeconds(_dashingTime);
-        _trailRenderer.emitting = false;
-        _isDashing = false;
-        Debug.Log("in coroutine isdashing" + _isDashing);
-    }
+    IEnumerator Dash()
+{
+    isDashing = true;
+
+    float dashDirection;
+
+    if (facingRight)
+        {
+            dashDirection = 1f;
+        }
+        else
+        {
+            dashDirection = -1f;
+        }
+    rb.linearVelocity = new Vector2(dashForce * dashDirection,0f);
+
+
+     yield return  new WaitForSeconds(dashDuration);
+
+     isDashing = false; 
+     rb.linearVelocity = Vector2.zero;
 }
+
+}
+
