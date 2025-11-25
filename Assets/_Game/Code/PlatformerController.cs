@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Numerics;
 using NUnit.Framework;
 using TMPro;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class PlatformerController : MonoBehaviour
@@ -66,7 +68,7 @@ public class PlatformerController : MonoBehaviour
         // Jump input
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            rb.linearVelocity = new UnityEngine.Vector2 (rb.linearVelocity.x, jumpForce);
         }
 
         if (Input.GetButtonDown("Dash") && !isDashing)
@@ -80,7 +82,7 @@ public class PlatformerController : MonoBehaviour
     private void FixedUpdate()
     {
         // Apply horizontal movement
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new UnityEngine.Vector2 (moveInput * moveSpeed, rb.linearVelocity.y);
     }
     
     // Visualise ground check in editor
@@ -94,27 +96,41 @@ public class PlatformerController : MonoBehaviour
     }
 
     IEnumerator Dash()
-{
-    isDashing = true;
+    {
+        isDashing = true;
 
-    float dashDirection;
+        float dashDirection;
 
-    if (facingRight)
+        // Vector2 TempVelocity = rb.linearVelocity;
+
+        if (facingRight)
+            {
+                dashDirection = 1f;
+            }
+            else
+            {
+                dashDirection = -1f;
+            }
+        rb.AddForce(new UnityEngine.Vector2 (dashForce * dashDirection,0f), ForceMode2D.Force);
+
+
+        yield return  new WaitForSeconds(dashDuration);
+
+        isDashing = false; 
+        // rb.linearVelocity = TempVelocity;
+    }
+
+    //teleporter test
+
+    private void OnTriggerEnter2D(Collider2D other)
+
+   
+    {
+         if (other.tag == "spikes")
         {
-            dashDirection = 1f;
+            transform.position = new UnityEngine.Vector3 (-1.901f, -0.272f, 0.0f);
         }
-        else
-        {
-            dashDirection = -1f;
-        }
-    rb.linearVelocity = new Vector2(dashForce * dashDirection,0f);
-
-
-     yield return  new WaitForSeconds(dashDuration);
-
-     isDashing = false; 
-     rb.linearVelocity = Vector2.zero;
-}
-
+    }   
+        
 }
 
