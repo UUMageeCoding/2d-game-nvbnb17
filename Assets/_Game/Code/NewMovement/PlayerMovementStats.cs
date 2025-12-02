@@ -71,7 +71,7 @@ public class PlayerMovementStats : ScriptableObject
     private void CalculateValues()
     {
         AdjustedJumpHeight = JumpHeight * JumpHeightCompensationFactor;
-        Gravity = (2f * AdjustedJumpHeight) / Mathf.Pow(TimeTillJumpApex, 2f);
+        Gravity = -(2f * AdjustedJumpHeight) / Mathf.Pow(TimeTillJumpApex, 2f);
         InitialJumpvelocity = Mathf.Abs(Gravity) * TimeTillJumpApex;
     }
 }

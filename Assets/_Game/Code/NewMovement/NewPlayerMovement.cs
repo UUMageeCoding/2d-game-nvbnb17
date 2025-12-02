@@ -44,17 +44,26 @@ public class NewPlayerMovement : MonoBehaviour
     //coyote time vars
     private float _coyoteTimer;
 
+    
+
     private void Awake()
     {
         _isFacingRight = true;
         
         _rb = GetComponent<Rigidbody2D>();
+
+        _jumpBufferTimer = 0f;
+
+        _coyoteTimer = 0f;
     }
 
     private void Update()
     {
+         JumpChecks();
         CountTimers();
-        JumpChecks();
+        
+
+                
     }
 
     private void FixedUpdate()
@@ -70,6 +79,7 @@ public class NewPlayerMovement : MonoBehaviour
         {
             Move(MoveStats.AirAcceleration, MoveStats.AirDeceleration, InputManager.Movement);
         }
+        
     }
 
     #region Movement
@@ -97,6 +107,8 @@ public class NewPlayerMovement : MonoBehaviour
             _rb.linearVelocity = new Vector2(_moveVelocity.x, _rb.linearVelocity.y);
         }
     }
+
+    
 
     private void TurnCheck(Vector2 moveInput)
     {
@@ -135,6 +147,7 @@ public class NewPlayerMovement : MonoBehaviour
         {
             _jumpBufferTimer = MoveStats.JumpBufferTime;
             _jumpReleasedDuringBuffer = false;
+
         }
 
         //WHEN WE RELEASE THE JUMP BUTTON
@@ -209,7 +222,7 @@ public class NewPlayerMovement : MonoBehaviour
         }
 
         _jumpBufferTimer = 0f;
-        _numberOfJumpsUsed += _numberOfJumpsUsed;
+        this._numberOfJumpsUsed += _numberOfJumpsUsed;
         VerticalVelocity = MoveStats.InitialJumpvelocity;
         
     }
@@ -224,7 +237,7 @@ public class NewPlayerMovement : MonoBehaviour
                 _isFastFalling = true;
             }
         }
-            
+        
             
          //GRAVITY ON ASCENDING
          if (VerticalVelocity >= 0f)
@@ -388,11 +401,11 @@ public class NewPlayerMovement : MonoBehaviour
     }
 
     #endregion
-
+    
     #region Timers
-    private void CountTimers()
+         private void CountTimers()
     {
-        _jumpBufferTimer -= Time.deltaTime;
+        _jumpBufferTimer = Mathf.Max(0f, _jumpBufferTimer - Time.deltaTime);
 
         if (!_isGrounded)
         {
@@ -401,5 +414,5 @@ public class NewPlayerMovement : MonoBehaviour
         else { _coyoteTimer = MoveStats.JumpCoyoteTime; }
     }
     #endregion
-
+    
 }

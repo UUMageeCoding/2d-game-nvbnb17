@@ -17,11 +17,16 @@ public class InputManager : MonoBehaviour
 
     private void Awake()
     {
+       
         PlayerInput = GetComponent<PlayerInput>();
 
         _moveAction = PlayerInput.actions["Move"];
         _jumpAction = PlayerInput.actions["Jump"];
         _runAction = PlayerInput.actions["Run"];
+        PlayerInput = GetComponent<PlayerInput>();
+
+    // Enable the Player action map first
+   
     }
 
     private void Update()
@@ -33,5 +38,7 @@ public class InputManager : MonoBehaviour
         JumpWasReleased = _jumpAction.WasReleasedThisFrame();
 
         RunIsHeld = _runAction.IsPressed();
+        Debug.Log($"Jump pressed: {JumpWasPressed}");
+
     }
 }
